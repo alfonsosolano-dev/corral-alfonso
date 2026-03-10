@@ -1,0 +1,27 @@
+import streamlit as st
+
+def alertas_pienso(dias_pienso):
+    if dias_pienso < 3:
+        st.error("⚠️ Queda pienso para menos de 3 días")
+    elif dias_pienso < 7:
+        st.warning("⚠️ Pienso para menos de una semana")
+    else:
+        st.info("✅ Pienso suficiente")
+
+def alertas_produccion(produccion):
+    if produccion.empty:
+        return
+    media = produccion["huevos"].mean()
+    ultimo = produccion.iloc[-1]["huevos"]
+    if ultimo < media*0.7:
+        st.warning(f"🥚 Producción baja: {ultimo} huevos vs media {media:.1f}")
+
+def alertas_lote(produccion, lotes, bajas):
+    if produccion.empty or lotes.empty:
+        return
+    ranking = produccion.groupby("lote")["huevos"].sum()
+    for lote, total in ranking.items():
+        info = lotes[lotes["id"]==lote]
+        nombre = f"{info['raza'].values[0]} ({lote})" if not info.empty else str(lote)
+        if total < 50:
+            st.warning(f"⚠️ Lote {nombre} con baja producción ({total} huevos)")
