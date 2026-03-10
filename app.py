@@ -112,4 +112,5 @@ elif menu=="💾 Backup":
         with open(DB_PATH, "wb") as f:
             f.write(up.getbuffer())
         st.success("Base de datos restaurada")
+
         st.experimental_rerun()
