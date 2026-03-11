@@ -27,7 +27,6 @@ def huevos_por_gallina(produccion, lotes, bajas):
     vivas = total_gallinas - total_bajas
     return total_huevos/vivas if vivas>0 else 0
 
-# ================= Predicción =================
 def media_movil_produccion(produccion, dias=7):
     if produccion.empty:
         return pd.DataFrame()
@@ -35,28 +34,21 @@ def media_movil_produccion(produccion, dias=7):
     df["media_movil"] = df["huevos"].rolling(dias).mean()
     return df
 
-# ================= Ranking de Lotes =================
 def ranking_lotes(produccion):
     if produccion.empty:
         return pd.DataFrame()
     return produccion.groupby("lote")["huevos"].sum().sort_values(ascending=False).reset_index()
 
-# ================= Informe mensual =================
 def informe_mensual(produccion, gastos, ventas):
-    if produccion.empty and gastos.empty and ventas.empty:
-        return pd.DataFrame()
     df = pd.DataFrame()
-    # Producción mensual
     if not produccion.empty:
         prod_mes = produccion.copy()
         prod_mes["mes"] = pd.to_datetime(prod_mes["fecha"], format="%d/%m/%Y").dt.to_period("M")
         df["Produccion"] = prod_mes.groupby("mes")["huevos"].sum()
-    # Gastos mensuales
     if not gastos.empty:
         gastos_mes = gastos.copy()
         gastos_mes["mes"] = pd.to_datetime(gastos_mes["fecha"], format="%d/%m/%Y").dt.to_period("M")
         df["Gastos"] = gastos_mes.groupby("mes")["cantidad"].sum()
-    # Ventas mensuales
     if not ventas.empty:
         ventas_mes = ventas.copy()
         ventas_mes["mes"] = pd.to_datetime(ventas_mes["fecha"], format="%d/%m/%Y").dt.to_period("M")
